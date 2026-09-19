@@ -1,0 +1,96 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:YtToMp3"
+        x:Class="YtToMp3.MainWindow"
+        x:DataType="vm:MainWindow"
+        Title="YouTube/Media -&gt; MP3"
+        Width="760" Height="620"
+        WindowStartupLocation="CenterScreen"
+        DragDrop.AllowDrop="True">
+
+    <Grid Margin="14" RowDefinitions="Auto,Auto,Auto,Auto,Auto,*,Auto" ColumnDefinitions="130,*,120">
+
+        <!-- URL manual -->
+        <TextBlock Grid.Row="0" Grid.Column="0" Text="URL do vídeo:" VerticalAlignment="Center"/>
+        <TextBox Grid.Row="0" Grid.Column="1" Name="UrlBox" Margin="0,4"
+                 PlaceholderText="Cole a URL ou arraste um link para esta janela..." />
+        <Button Grid.Row="0" Grid.Column="2" Content="Adicionar" Name="AddButton"
+                Click="AddButton_Click" Margin="6,4,0,4"/>
+
+        <!-- Clipboard + arrastar -->
+        <StackPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Orientation="Horizontal"
+                    Spacing="16" Margin="0,4">
+            <CheckBox Name="ClipboardMonitorCheck" Content="Monitorar área de transferência"
+                      IsCheckedChanged="ClipboardMonitorCheck_Changed"/>
+            <TextBlock Text="Downloads simultâneos:" VerticalAlignment="Center"/>
+            <NumericUpDown Name="ConcurrencyUpDown" Minimum="1" Maximum="8" Value="2" Width="90"/>
+        </StackPanel>
+
+        <!-- Qualidade / formato -->
+        <StackPanel Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Orientation="Horizontal"
+                    Spacing="16" Margin="0,4">
+            <TextBlock Text="Qualidade:" VerticalAlignment="Center"/>
+            <ComboBox Name="QualityCombo" Width="220" SelectedIndex="0">
+                <ComboBoxItem Content="Melhor qualidade (MP3 ~190kbps VBR)"/>
+                <ComboBoxItem Content="MP3 320kbps"/>
+                <ComboBoxItem Content="MP3 192kbps"/>
+                <ComboBoxItem Content="MP3 128kbps"/>
+                <ComboBoxItem Content="Formato original (sem conversão)"/>
+            </ComboBox>
+            <TextBlock Text="Pasta:" VerticalAlignment="Center"/>
+            <TextBox Name="OutputBox" IsReadOnly="True" Width="220"/>
+            <Button Content="Escolher..." Name="BrowseButton" Click="BrowseButton_Click"/>
+        </StackPanel>
+
+        <!-- Caminhos das ferramentas -->
+        <StackPanel Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3" Orientation="Horizontal"
+                    Spacing="16" Margin="0,4">
+            <TextBlock Text="yt-dlp:" VerticalAlignment="Center"/>
+            <TextBox Name="YtDlpPathBox" Text="yt-dlp" Width="150"/>
+            <TextBlock Text="ffmpeg:" VerticalAlignment="Center"/>
+            <TextBox Name="FfmpegPathBox" Text="ffmpeg" Width="150"/>
+            <TextBlock Text="Cookies do navegador (opcional):" VerticalAlignment="Center"/>
+            <ComboBox Name="CookiesCombo" Width="130" SelectedIndex="0">
+                <ComboBoxItem Content="Nenhum"/>
+                <ComboBoxItem Content="chrome"/>
+                <ComboBoxItem Content="firefox"/>
+                <ComboBoxItem Content="edge"/>
+                <ComboBoxItem Content="brave"/>
+            </ComboBox>
+        </StackPanel>
+
+        <!-- Ações da fila -->
+        <StackPanel Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="3" Orientation="Horizontal"
+                    Spacing="10" Margin="0,8">
+            <Button Content="Iniciar fila" Name="StartQueueButton" Click="StartQueueButton_Click"/>
+            <Button Content="Limpar concluídos" Name="ClearFinishedButton" Click="ClearFinishedButton_Click"/>
+        </StackPanel>
+
+        <!-- Fila -->
+        <Border Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="3" BorderBrush="Gray" BorderThickness="1">
+            <ListBox Name="QueueList" ItemsSource="{Binding Queue}">
+                <ListBox.ItemTemplate>
+                    <DataTemplate x:DataType="vm:DownloadItem">
+                        <Grid ColumnDefinitions="*,140,90" Margin="4" DoubleTapped="QueueItem_DoubleTapped">
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Text="{Binding Title}" FontWeight="Bold"/>
+                                <TextBlock Text="{Binding Artist}" FontSize="11" Opacity="0.7"/>
+                                <TextBlock Text="{Binding Url}" FontSize="10" Opacity="0.5" TextTrimming="CharacterEllipsis"/>
+                            </StackPanel>
+                            <ProgressBar Grid.Column="1" Minimum="0" Maximum="100"
+                                         Value="{Binding Progress}" Height="14" VerticalAlignment="Center"/>
+                            <TextBlock Grid.Column="2" Text="{Binding StatusText}" VerticalAlignment="Center"
+                                       FontSize="11" TextWrapping="Wrap"/>
+                        </Grid>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </Border>
+
+        <TextBlock Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="3" Name="StatusLabel"
+                   Text="Pronto. Dê duplo clique num item da fila para editar artista/título."
+                   Margin="0,8,0,0" FontSize="11" Opacity="0.8"/>
+
+    </Grid>
+
+</Window>
